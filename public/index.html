@@ -12,10 +12,10 @@
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <style>
     body {
-                padding-top: 50px;
-                padding-bottom: 20px;
-            }
-        </style>
+      padding-top: 50px;
+      padding-bottom: 20px;
+    }
+  </style>
   <link rel="stylesheet" href="css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="css/bootstrap-toggle.min.css">
   <link rel="stylesheet" href="css/main.css">
@@ -52,16 +52,22 @@
   <!-- Main jumbotron for a primary marketing message or call to action -->
   <div class="jumbotron">
     <div class="container">
-      <p>Status: <input type="checkbox" checked data-toggle="toggle" data-on="Free" data-off="Busy" data-onstyle="success"
-          data-offstyle="danger"></p>
+      <p>Status: <input type="checkbox" checked data-toggle="toggle" data-on="Free" data-off="Busy"
+          data-onstyle="success" data-offstyle="danger"></p>
+      <p id="counter">This is a counter</p>
+      <p><a class="btn btn-primary btn-lg"
+        href="javascript:void(0)" role="button" id="reset">Reset</a></p>
     </div>
   </div>
   <div class="container">
     <p>Have any questions or suggestions?</p>
-    <p><a class="btn btn-primary btn-lg" href="https://wa.me/33766888303?text=I'm%20interested%20in%20your%20website%20dude" role="button">Ask the dude... &raquo;</a></p>
+    <p><a class="btn btn-primary btn-lg"
+        href="https://wa.me/33766888303?text=I'm%20interested%20in%20your%20website%20dude" role="button">Ask the
+        dude... &raquo;</a></p>
   </div>
   <!-- Modal -->
-  <div class="modal fade" id="modalName" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="modalName" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -71,7 +77,8 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>This is a simple website to check if the Washing Machine is free, so you won't need to walk around with your
+          <p>This is a simple website to check if the Washing Machine is free, so you won't need to walk around with
+            your
             clothes or ask in the whatsapp group.</p>
           <p>The usage is very simple:</p>
           <ol>
@@ -97,9 +104,6 @@
     </div>
   </div>
   <script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io();
-</script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
 
