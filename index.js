@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path');
 var app = express();
+const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -16,7 +17,7 @@ io.on('connection', function(socket){
   console.log('a user connected');
 });
 
-http.listen(3000, function(){
+http.listen(PORT, function(){
   console.log('listening on *:3000');
 });
 
