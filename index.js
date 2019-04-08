@@ -5,6 +5,7 @@ var app = express();
 const PORT = process.env.PORT || 3000;
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+app.use(require('body-parser').json());
 //web-push
 const webpush = require('web-push');
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
