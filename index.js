@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var path = require('path');
 var app = express();
@@ -9,7 +10,7 @@ const webpush = require('web-push');
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 webpush.setVapidDetails('mailto:patricio.dibacco@acrovia.net', publicVapidKey, privateVapidKey);
-app.use(require('body-parser').json());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', function(socket){
