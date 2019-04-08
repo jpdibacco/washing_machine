@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:3000');
+var socket = io();
 
 socket.on('timer', function (data) {
     $('#counter').html(data.countdown);
