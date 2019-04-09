@@ -43,6 +43,6 @@ $(document).ready(function () {
         } else {
             console.log('mother f* didnt put name');
         }
-        //localStorage.setItem('username', )
+        localStorage.setItem('username', tempVal);
     });
 });
