@@ -1,7 +1,10 @@
 var socket = io();
-
 socket.on('timer', function (data) {
     $('#counter').html(data.countdown);
+     if(data.countdown == 0){
+         // sending to the client
+        socket.emit('hello', 'can you hear me?', 1, 2, 'abc');
+     }
 });
 
 $('#reset').click(function() {

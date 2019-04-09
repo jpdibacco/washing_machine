@@ -20,14 +20,19 @@ io.on('connection', function(socket){
 http.listen(PORT, function(){
   console.log('listening on *:3000');
 });
-var countdown = 1000;
+var countdown = 10;
 setInterval(function() {
   countdown--;
   io.sockets.emit('timer', { countdown: countdown });
+  console.log('countdown: ',countdown);
+  if(countdown == 0){
+    console.log('countdown is 0');
+    sendPush();
+  }
 }, 1000);
 io.sockets.on('connection', function (socket) {
   socket.on('reset', function (data) {
-    countdown = 1000;
+    countdown = 10;
     io.sockets.emit('timer', { countdown: countdown });
   });
 });
@@ -43,3 +48,10 @@ app.post('/subscribe', (req, res) => {
       console.error(error.stack);
     });
   });
+function sendPush(){
+    const subscription = JSON.stringify({ body: 'test body' });
+    const payload = JSON.stringify({ title: 'test' });
+    webpush.sendNotification(subscription, payload).catch(error => {
+        console.error(error.stack);
+      });
+}
