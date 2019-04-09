@@ -21,24 +21,19 @@ webpush.setVapidDetails('mailto:patricio.dibacco@acrovia.net', publicVapidKey, p
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+//added dirty db:
+var dirty = require('dirty');
+var db = dirty('user.db');
+//washing machine status:
+var status = true;
 io.on('connection', function (socket) {
   console.log('a user connected');
 });
 http.listen(PORT, function () {
   console.log('listening on *:3000');
 });
-var countdown = 10;
-setInterval(function () {
-  countdown--;
-  io.sockets.emit('timer', { countdown: countdown });
-  console.log('countdown: ', countdown);
-  if (countdown == 0) {
-    console.log('countdown is 0');
-    console.log('suscription is:', pushSubscriptionTest);
-    //webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
-    clearCounter(this);
-  }
-}, 1000);
+//change countdown for general variable:
+var countdown;
 function clearCounter(what) {
   clearInterval(what);
 }
@@ -46,8 +41,23 @@ io.sockets.on('connection', function (socket) {
   socket.on('reset', function (data) {
     countdown = 10;
     io.sockets.emit('timer', { countdown: countdown });
+
   });
+  io.sockets.emit('status', { status: status });
 });
+setInterval(function () {
+  countdown--;
+  io.sockets.emit('timer', { countdown: countdown });
+  io.sockets.emit('status', { status: status });
+  console.log('countdown: ', countdown);
+  if (countdown == 0) {
+    console.log('countdown is 0');
+    console.log('suscription is:', pushSubscriptionTest);
+    //webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
+    clearCounter(this);
+    status = true;
+  }
+}, 1000);
 //web-push:
 app.post('/subscribe', (req, res) => {
   const subscription = req.body;
@@ -62,8 +72,18 @@ app.post('/subscribe', (req, res) => {
   });
 });
 // save username:
+var userName;
 app.post('/user', function (req, res) {
   var datainfo;
   console.log('user is: ', req.body);
+  userName = req.body.name;
+  db.set('user', { name: userName });
+  console.log('Added user, he has name: ', db.get('user').name);
   res.send('ok');
-})
+});
+app.get('/showlast', function (req, res) {
+  console.log('Last user, he/she has name:.', db.get('user').name);
+  var usersend = db.get('user').name;
+  //res.send('last');
+  res.send(usersend);
+});

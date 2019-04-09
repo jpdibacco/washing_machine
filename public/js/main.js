@@ -11,29 +11,38 @@ $('#reset').click(function () {
     socket.emit('reset');
 });
 var localUser = localStorage.getItem('username'), tempVal;
-var postItem = function(val) {
-    var data = {name: val};
+var postItem = function (val) {
+    var data = { name: val };
     $.ajax({
         type: 'POST',
         url: '/user',
         timeout: 2000,
-        data:JSON.stringify(data),
+        data: JSON.stringify(data),
         contentType: 'application/json; charset=utf-8',
-        success: function(data) {
+        success: function (data) {
             //show content
-            console.log('Success!'+ data);
+            console.log('Success!' + data);
             $('#modalName').modal('hide');
         },
-        error: function(jqXHR, textStatus, err) {
+        error: function (jqXHR, textStatus, err) {
             //show error message
-            console.log('text status '+textStatus+', err '+err)
+            console.log('text status ' + textStatus + ', err ' + err)
         }
     });
+}
+//time selector
+var slider = document.getElementById("timeSelector");
+var output = document.getElementById("timetoShow");
+output.innerHTML = slider.value; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function() {
+  output.innerHTML = this.value;
 }
 $(document).ready(function () {
     if (localUser == null) {
         $('#modalName').modal('show');
-    }else{
+    } else {
         $('#showToast').toast('show');
         $('#insertuser').text(localUser);
     }
@@ -48,4 +57,9 @@ $(document).ready(function () {
         }
         localStorage.setItem('username', tempVal);
     });
+    //show last user only if status if busy:
+
+    // $.get('/showlast', function (data) {
+    //     $('#lastUser').text(data);
+    // });
 });
