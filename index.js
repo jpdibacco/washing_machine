@@ -30,10 +30,13 @@ setInterval(function () {
   if (countdown == 0) {
     console.log('countdown is 0');
     console.log('suscription is:', pushSubscriptionTest);
-    webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
-    countdown = 10;
+    //webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
+    //clearCounter();
   }
 }, 1000);
+function clearCounter(){
+  clearInterval(this);
+}
 io.sockets.on('connection', function (socket) {
   socket.on('reset', function (data) {
     countdown = 10;
