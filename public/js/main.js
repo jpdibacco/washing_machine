@@ -33,6 +33,9 @@ var postItem = function(val) {
 $(document).ready(function () {
     if (localUser == null) {
         $('#modalName').modal('show');
+    }else{
+        $('#showToast').toast('show');
+        $('#insertuser').text(localUser);
     }
     console.log('localuser:' + localUser);
     $('#okBtn').on('click', function () {
