@@ -10,24 +10,28 @@ app.use(require('body-parser').json());
 const webpush = require('web-push');
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+var pushSubscriptionTest; //your subscription object
+// This is the same output of calling JSON.stringify on a PushSubscription
 webpush.setVapidDetails('mailto:patricio.dibacco@acrovia.net', publicVapidKey, privateVapidKey);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-io.on('connection', function(socket){
+io.on('connection', function (socket) {
   console.log('a user connected');
 });
-http.listen(PORT, function(){
+http.listen(PORT, function () {
   console.log('listening on *:3000');
 });
 var countdown = 10;
-setInterval(function() {
+setInterval(function () {
   countdown--;
   io.sockets.emit('timer', { countdown: countdown });
-  console.log('countdown: ',countdown);
-  if(countdown == 0){
+  console.log('countdown: ', countdown);
+  if (countdown == 0) {
     console.log('countdown is 0');
-    sendPush();
+    console.log('suscription is:', pushSubscriptionTest);
+    webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
+    countdown = 10;
   }
 }, 1000);
 io.sockets.on('connection', function (socket) {
@@ -38,20 +42,14 @@ io.sockets.on('connection', function (socket) {
 });
 //web-push:
 app.post('/subscribe', (req, res) => {
-    const subscription = req.body;
-    res.status(201).json({});
-    const payload = JSON.stringify({ title: 'test' });
-  
-    console.log(subscription);
-  
-    webpush.sendNotification(subscription, payload).catch(error => {
-      console.error(error.stack);
-    });
+  const subscription = req.body;
+  pushSubscriptionTest = req.body;
+  res.status(201).json({});
+  const payload = JSON.stringify({ title: 'Washing Machine' });
+
+  console.log(subscription);
+
+  webpush.sendNotification(subscription, payload).catch(error => {
+    console.error(error.stack);
   });
-function sendPush(){
-    const subscription = JSON.stringify({ body: 'test body' });
-    const payload = JSON.stringify({ title: 'test' });
-    webpush.sendNotification(subscription, payload).catch(error => {
-        console.error(error.stack);
-      });
-}
+});
