@@ -1,12 +1,20 @@
 var socket = io();
 socket.on('timer', function (data) {
     $('#counter').html(data.countdown);
+    console.log('whats the status? ' + data.status);
     if (data.countdown == 0) {
         // sending to the client
         socket.emit('hello', 'can you hear me?', 1, 2, 'abc');
     }
 });
-
+socket.on('status', function (data) {
+    if (data.status == false) {
+        $('.toggle').addClass('off');
+    } else {
+        $('.toggle').removeClass('off');
+        $('#showTime').show();
+    }
+});
 $('#reset').click(function () {
     socket.emit('reset');
 });
@@ -30,14 +38,33 @@ var postItem = function (val) {
         }
     });
 }
+var postTime = function (val) {
+    let data = { time: val };
+    $.ajax({
+        type: 'POST',
+        url: '/time',
+        timeout: 2000,
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+            //hide the time scroll and ok btn
+            console.log('time sent!', data);
+            $('#showTime').hide();
+        },
+        error: function (jqXHR, textStatusm, err) {
+            //show erro
+            console.log('text status ' + textStatus + ', err ' + err);
+        }
+    });
+}
 //time selector
 var slider = document.getElementById("timeSelector");
 var output = document.getElementById("timetoShow");
 output.innerHTML = slider.value; // Display the default slider value
 
 // Update the current slider value (each time you drag the slider handle)
-slider.oninput = function() {
-  output.innerHTML = this.value;
+slider.oninput = function () {
+    output.innerHTML = this.value + ' mins';
 }
 $(document).ready(function () {
     if (localUser == null) {
@@ -57,9 +84,15 @@ $(document).ready(function () {
         }
         localStorage.setItem('username', tempVal);
     });
+    $('#gobtn').on('click', function () {
+        console.log('clicked ok!')
+        let timeselector = $('#timeSelector').val();
+        postTime(timeselector);
+    });
     //show last user only if status if busy:
 
     // $.get('/showlast', function (data) {
     //     $('#lastUser').text(data);
     // });
 });
+//$('.toggle').addClass('off');

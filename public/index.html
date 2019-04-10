@@ -53,13 +53,14 @@
   <div class="jumbotron">
     <div class="container">
       <p>Status: <input type="checkbox" checked data-toggle="toggle" data-on="Free" data-off="Busy"
-          data-onstyle="success" data-offstyle="danger" disabled></p>
+          data-onstyle="success" data-offstyle="danger" disabled id="statusswitch"></p>
       <!-- <p>Last User: <b id="lastUser">LastUserName</b></p> -->
       <p id="timeleft">Time left: <b id="counter"></b></p>
       <!-- <p><a class="btn btn-primary btn-lg" href="javascript:void(0)" role="button" id="reset">Reset</a></p> -->
-      <div id="showTime" style="display:none">
+      <div id="showTime">
       <input type="range" min="10" max="120" value="60" class="slider" id="timeSelector">
         <p id="timetoShow"></p>
+        <p><a class="btn btn-success btn-lg" href="javascript:void(0)" role="button" id="gobtn">OK GO!</a></p>
       </div>
     </div>
   </div>

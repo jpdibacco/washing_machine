@@ -45,19 +45,22 @@ io.sockets.on('connection', function (socket) {
   });
   io.sockets.emit('status', { status: status });
 });
-setInterval(function () {
-  countdown--;
-  io.sockets.emit('timer', { countdown: countdown });
-  io.sockets.emit('status', { status: status });
-  console.log('countdown: ', countdown);
-  if (countdown == 0) {
-    console.log('countdown is 0');
-    console.log('suscription is:', pushSubscriptionTest);
-    //webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
-    clearCounter(this);
-    status = true;
-  }
-}, 1000);
+var settimerFunction = function(){
+  setInterval(function () {
+    countdown--;
+    io.sockets.emit('timer', { countdown: countdown });
+    io.sockets.emit('status', { status: status });
+    console.log('countdown: ', countdown);
+    if (countdown == 0) {
+      console.log('countdown is 0');
+      console.log('suscription is:', pushSubscriptionTest);
+      //webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
+      clearCounter(this);
+      status = true;
+      io.sockets.emit('status', { status: status });
+    }
+  }, 1000);
+}
 //web-push:
 app.post('/subscribe', (req, res) => {
   const subscription = req.body;
@@ -86,4 +89,12 @@ app.get('/showlast', function (req, res) {
   var usersend = db.get('user').name;
   //res.send('last');
   res.send(usersend);
+});
+app.post('/time', function (req, res) {
+  console.log('time is: ', req.body);
+  countdown = req.body.time;
+  status = false;
+  settimerFunction();
+  console.log('time is:', countdown);
+  res.send('ok time!');
 });
