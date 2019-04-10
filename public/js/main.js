@@ -146,6 +146,7 @@ $(document).ready(function () {
     $('#gobtn').on('click', function () {
         console.log('clicked ok!')
         let timeselector = $('#timeSelector').val();
+        timeselector = timeselector*60;
         postTime(timeselector);
         //postLastUser(dateTime);
     });

@@ -48,7 +48,7 @@ io.sockets.on('connection', function (socket) {
     console.log('hey whos the current user?', data);
     currentUser = data;
     // check status and emit:
-    if(status == false){
+    if (status == false) {
       io.sockets.emit('currentUser', { currentuser: currentUser });
     }
   });
@@ -95,7 +95,10 @@ app.post('/time', function (req, res) {
   settimerFunction = setInterval(function () {
     if (status === false) {
       countdown--;
-      io.sockets.emit('timer', { countdown: countdown });
+      //convert values to mins:
+      var minutes = Math.floor(countdown / 60);
+      var seconds = countdown % 60;
+      io.sockets.emit('timer', { countdown: minutes + ':' + seconds });
       console.log('countdown: ', countdown);
       if (countdown == 0) {
         console.log('countdown is 0');
