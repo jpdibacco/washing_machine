@@ -21,8 +21,9 @@ $('#reset').click(function () {
     socket.emit('reset');
 });
 socket.on('currentUser', function (data) {
+    console.log('current user: ' + data.currentuser);
     $('#currentUser').text(data.currentuser);
-    if (data.currentuser == localUser) {
+    if (data.currentuser == localUser || data.currentuser != undefined) {
         $('#cancel').show();
     }
 });
@@ -48,6 +49,7 @@ var postItem = function (val) {
 }
 var postTime = function (val) {
     let data = { time: val };
+    socket.emit('currentUserclient', localUser);
     $.ajax({
         type: 'POST',
         url: '/time',
@@ -59,7 +61,6 @@ var postTime = function (val) {
             console.log('time sent!', data);
             $('#showTime').hide();
             console.log('are u sending localuser?' + localUser);
-            socket.emit('currentUserclient', localUser);
         },
         error: function (err) {
             //show erro
