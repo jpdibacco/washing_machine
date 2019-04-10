@@ -67,9 +67,9 @@ app.post('/subscribe', (req, res) => {
 
   console.log(subscription);
 
-  // webpush.sendNotification(subscription, payload).catch(error => {
-  //   console.error(error.stack);
-  // });
+  webpush.sendNotification(subscription, payload).catch(error => {
+    console.error(error.stack);
+  });
 });
 // save username:
 var userName;
