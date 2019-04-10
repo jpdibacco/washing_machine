@@ -23,7 +23,7 @@ $('#reset').click(function () {
 socket.on('currentUser', function (data) {
     console.log('current user: ' + data.currentuser);
     $('#currentUser').text(data.currentuser);
-    if (data.currentuser == localUser || data.currentuser != undefined) {
+    if (data.currentuser == localUser && data.currentuser != undefined) {
         $('#cancel').show();
     }
 });
