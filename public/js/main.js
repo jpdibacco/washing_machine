@@ -20,13 +20,6 @@ socket.on('status', function (data) {
 $('#reset').click(function () {
     socket.emit('reset');
 });
-socket.on('currentUser', function (data) {
-    console.log('current user: ' + data.currentuser);
-    $('#currentUser').text(data.currentuser);
-    if (data.currentuser == localUser && data.currentuser != undefined) {
-        $('#cancel').show();
-    }
-});
 var localUser = localStorage.getItem('username'), tempVal;
 var postItem = function (val) {
     var data = { name: val };
@@ -147,7 +140,7 @@ $(document).ready(function () {
     $('#gobtn').on('click', function () {
         console.log('clicked ok!')
         let timeselector = $('#timeSelector').val();
-        timeselector = timeselector*60;
+        timeselector = timeselector * 60;
         postTime(timeselector);
         //postLastUser(dateTime);
     });
@@ -159,5 +152,12 @@ $(document).ready(function () {
     // $.get('/showlast', function (data) {
     //     $('#lastUser').text(data);
     // });
+    socket.on('currentUser', function (data) {
+        console.log('current user: ' + data.currentuser);
+        $('#currentUser').text(data.currentuser);
+        if (data.currentuser == localUser) {
+            $('#cancel').show();
+        }
+    });
 });
 //$('.toggle').addClass('off');
