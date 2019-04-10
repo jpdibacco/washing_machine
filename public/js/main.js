@@ -10,6 +10,7 @@ socket.on('timer', function (data) {
 socket.on('status', function (data) {
     if (data.status == false) {
         $('.toggle').addClass('off');
+        $('#showTime').hide();
     } else {
         $('.toggle').removeClass('off');
         $('#showTime').show();
