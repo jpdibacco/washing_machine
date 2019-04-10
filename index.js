@@ -54,7 +54,7 @@ var settimerFunction = function(){
     if (countdown == 0) {
       console.log('countdown is 0');
       console.log('suscription is:', pushSubscriptionTest);
-      //webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'real push!' }));
+      webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'It is DONE !!!' }));
       clearCounter(this);
       status = true;
       io.sockets.emit('status', { status: status });
