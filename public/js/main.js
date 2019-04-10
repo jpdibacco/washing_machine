@@ -11,7 +11,6 @@ socket.on('status', function (data) {
     if (data.status == false) {
         $('.toggle').addClass('off');
         $('#showTime').hide();
-        $('#cancel').show();
     } else {
         $('.toggle').removeClass('off');
         $('#showTime').show();
@@ -21,8 +20,11 @@ socket.on('status', function (data) {
 $('#reset').click(function () {
     socket.emit('reset');
 });
-socket.on('currentUser', function(data){
+socket.on('currentUser', function (data) {
     $('#currentUser').text(data.currentuser);
+    if (data.currentuser == localUser) {
+        $('#cancel').show();
+    }
 });
 var localUser = localStorage.getItem('username'), tempVal;
 var postItem = function (val) {
@@ -56,12 +58,12 @@ var postTime = function (val) {
             //hide the time scroll and ok btn
             console.log('time sent!', data);
             $('#showTime').hide();
-            console.log('are u sending localuser?'+ localUser);
+            console.log('are u sending localuser?' + localUser);
             socket.emit('currentUserclient', localUser);
         },
         error: function (err) {
             //show erro
-            console.log('error:' +  err);
+            console.log('error:' + err);
         }
     });
 }
@@ -117,11 +119,11 @@ slider.oninput = function () {
 
 //get current date:
 var dateTime;
-var getCurrent = function(){
-var today = new Date();
-var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-dateTime = date+' '+time;
+var getCurrent = function () {
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    dateTime = date + ' ' + time;
 }
 $(document).ready(function () {
     if (localUser == null) {
