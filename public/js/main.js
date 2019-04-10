@@ -21,6 +21,9 @@ socket.on('status', function (data) {
 $('#reset').click(function () {
     socket.emit('reset');
 });
+socket.on('currentUser', function(data){
+    $('#currentUser').text(data.currentuser);
+});
 var localUser = localStorage.getItem('username'), tempVal;
 var postItem = function (val) {
     var data = { name: val };
@@ -53,6 +56,8 @@ var postTime = function (val) {
             //hide the time scroll and ok btn
             console.log('time sent!', data);
             $('#showTime').hide();
+            console.log('are u sending localuser?'+ localUser);
+            socket.emit('currentUserclient', localUser);
         },
         error: function (err) {
             //show erro
@@ -80,6 +85,26 @@ var postCancel = function (val) {
         }
     });
 }
+// add last user:
+var postLastUser = function (val) {
+    var data = { name: localUser, date: val };
+    $.ajax({
+        type: 'POST',
+        url: '/lastuser',
+        timeout: 2000,
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+            //show content
+            console.log('Success!' + data);
+            //$('#modalName').modal('hide');
+        },
+        error: function (jqXHR, textStatus, err) {
+            //show error message
+            console.log('text status ' + textStatus + ', err ' + err)
+        }
+    });
+}
 //time selector
 var slider = document.getElementById("timeSelector");
 var output = document.getElementById("timetoShow");
@@ -88,6 +113,15 @@ output.innerHTML = slider.value; // Display the default slider value
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function () {
     output.innerHTML = this.value + ' mins';
+}
+
+//get current date:
+var dateTime;
+var getCurrent = function(){
+var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+dateTime = date+' '+time;
 }
 $(document).ready(function () {
     if (localUser == null) {
@@ -111,6 +145,7 @@ $(document).ready(function () {
         console.log('clicked ok!')
         let timeselector = $('#timeSelector').val();
         postTime(timeselector);
+        //postLastUser(dateTime);
     });
     $('#cancel').on('click', function () {
         postCancel(false);

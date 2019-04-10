@@ -26,9 +26,10 @@ var dirty = require('dirty');
 var db = dirty('user.db');
 //washing machine status:
 var status = true;
-io.on('connection', function (socket) {
-  console.log('a user connected');
-});
+var currentUser = 'No one at the moment';
+// io.on('connection', function (socket) {
+//   console.log('a user connected');
+// });
 http.listen(PORT, function () {
   console.log('listening on *:3000');
 });
@@ -38,10 +39,21 @@ function clearCounter(what) {
   clearInterval(what);
 }
 io.sockets.on('connection', function (socket) {
-  socket.on('reset', function (data) {
-    countdown = 10;
-    io.sockets.emit('timer', { countdown: countdown });
+  // socket.on('reset', function (data) {
+  //   countdown = 10;
+  //   io.sockets.emit('timer', { countdown: countdown });
 
+  // });
+  socket.on('currentUserclient', function (data) {
+    console.log('hey whos the current user?', data);
+    currentUser = data;
+    // check status and emit:
+    if(status == false){
+      io.sockets.emit('currentUser', { currentuser: currentUser });
+    }
+  });
+  socket.on('disconnect', function () {
+    //do something else when someone is offline?
   });
   io.sockets.emit('status', { status: status });
 });
@@ -105,3 +117,12 @@ app.post('/cancel', function (req, res) {
   clearInterval(settimerFunction);
   res.send('ok cancel!');
 });
+app.post('/lastuser', function (req, res) {
+  var datainfo;
+  console.log('last user is: ', req.body);
+  //currentUser = req.body.name;
+  //db.update('user', { date: req.body.date });
+  console.log('Updated user, he has name: ', req.body.name);
+  res.send('ok update last user');
+});
+
