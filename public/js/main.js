@@ -11,9 +11,11 @@ socket.on('status', function (data) {
     if (data.status == false) {
         $('.toggle').addClass('off');
         $('#showTime').hide();
+        $('#cancel').show();
     } else {
         $('.toggle').removeClass('off');
         $('#showTime').show();
+        $('#cancel').hide();
     }
 });
 $('#reset').click(function () {
@@ -52,9 +54,29 @@ var postTime = function (val) {
             console.log('time sent!', data);
             $('#showTime').hide();
         },
-        error: function (jqXHR, textStatusm, err) {
+        error: function (err) {
             //show erro
-            console.log('text status ' + textStatus + ', err ' + err);
+            console.log('error:' +  err);
+        }
+    });
+}
+var postCancel = function (val) {
+    let data = { status: val };
+    $.ajax({
+        type: 'POST',
+        url: '/cancel',
+        timeout: 2000,
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+            //hide the time scroll and ok btn
+            console.log('time sent!', data);
+            $('#showTime').show();
+            $('#cancel').hide();
+        },
+        error: function (err) {
+            //show erro
+            console.log('err ' + err);
         }
     });
 }
@@ -89,6 +111,9 @@ $(document).ready(function () {
         console.log('clicked ok!')
         let timeselector = $('#timeSelector').val();
         postTime(timeselector);
+    });
+    $('#cancel').on('click', function () {
+        postCancel(false);
     });
     //show last user only if status if busy:
 

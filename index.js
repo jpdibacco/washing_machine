@@ -45,22 +45,7 @@ io.sockets.on('connection', function (socket) {
   });
   io.sockets.emit('status', { status: status });
 });
-var settimerFunction = function(){
-  setInterval(function () {
-    countdown--;
-    io.sockets.emit('timer', { countdown: countdown });
-    io.sockets.emit('status', { status: status });
-    console.log('countdown: ', countdown);
-    if (countdown == 0) {
-      console.log('countdown is 0');
-      console.log('suscription is:', pushSubscriptionTest);
-      webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'It is DONE !!!' }));
-      clearCounter(this);
-      status = true;
-      io.sockets.emit('status', { status: status });
-    }
-  }, 1000);
-}
+var settimerFunction;
 //web-push:
 app.post('/subscribe', (req, res) => {
   const subscription = req.body;
@@ -70,9 +55,9 @@ app.post('/subscribe', (req, res) => {
 
   console.log(subscription);
 
-  webpush.sendNotification(subscription, payload).catch(error => {
-    console.error(error.stack);
-  });
+  // webpush.sendNotification(subscription, payload).catch(error => {
+  //   console.error(error.stack);
+  // });
 });
 // save username:
 var userName;
@@ -94,7 +79,29 @@ app.post('/time', function (req, res) {
   console.log('time is: ', req.body);
   countdown = req.body.time;
   status = false;
-  settimerFunction();
+  io.sockets.emit('status', { status: status });
+  settimerFunction = setInterval(function () {
+    if (status === false) {
+      countdown--;
+      io.sockets.emit('timer', { countdown: countdown });
+      console.log('countdown: ', countdown);
+      if (countdown == 0) {
+        console.log('countdown is 0');
+        console.log('suscription is:', pushSubscriptionTest);
+        webpush.sendNotification(pushSubscriptionTest, JSON.stringify({ title: 'It is DONE !!!' }));
+        clearCounter(this);
+        status = true;
+        io.sockets.emit('status', { status: status });
+      }
+    }
+  }, 1000);
   console.log('time is:', countdown);
   res.send('ok time!');
+});
+app.post('/cancel', function (req, res) {
+  console.log('cancel is: ', req.body);
+  status = true;
+  io.sockets.emit('status', { status: status });
+  clearInterval(settimerFunction);
+  res.send('ok cancel!');
 });
