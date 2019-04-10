@@ -1,26 +1,23 @@
 var socket = io();
-socket.on('timer', function (data) {
-    $('#counter').html(data.countdown);
-    console.log('whats the status? ' + data.status);
-    if (data.countdown == 0) {
-        // sending to the client
-        socket.emit('hello', 'can you hear me?', 1, 2, 'abc');
-    }
-});
-socket.on('status', function (data) {
-    if (data.status == false) {
-        $('.toggle').addClass('off');
-        $('#showTime').hide();
-    } else {
-        $('.toggle').removeClass('off');
-        $('#showTime').show();
-        $('#cancel').hide();
-    }
-});
-$('#reset').click(function () {
-    socket.emit('reset');
-});
+var connected = false;
 var localUser = localStorage.getItem('username'), tempVal;
+//time selector
+var slider = document.getElementById("timeSelector");
+var output = document.getElementById("timetoShow");
+output.innerHTML = slider.value; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function () {
+    output.innerHTML = this.value + ' mins';
+}
+//get current date:
+var dateTime;
+var getCurrent = function () {
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    dateTime = date + ' ' + time;
+}
 var postItem = function (val) {
     var data = { name: val };
     $.ajax({
@@ -40,9 +37,8 @@ var postItem = function (val) {
         }
     });
 }
-var postTime = function (val) {
-    let data = { time: val };
-    socket.emit('currentUserclient', localUser);
+var postTime = function (val, user) {
+    let data = { time: val, user: user };
     $.ajax({
         type: 'POST',
         url: '/time',
@@ -53,7 +49,8 @@ var postTime = function (val) {
             //hide the time scroll and ok btn
             console.log('time sent!', data);
             $('#showTime').hide();
-            console.log('are u sending localuser?' + localUser);
+            $('#cancel').show();
+            console.log('are u sending localuser?' + user);
         },
         error: function (err) {
             //show erro
@@ -81,46 +78,29 @@ var postCancel = function (val) {
         }
     });
 }
-// add last user:
-var postLastUser = function (val) {
-    var data = { name: localUser, date: val };
-    $.ajax({
-        type: 'POST',
-        url: '/lastuser',
-        timeout: 2000,
-        data: JSON.stringify(data),
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-            //show content
-            console.log('Success!' + data);
-            //$('#modalName').modal('hide');
-        },
-        error: function (jqXHR, textStatus, err) {
-            //show error message
-            console.log('text status ' + textStatus + ', err ' + err)
-        }
-    });
-}
-//time selector
-var slider = document.getElementById("timeSelector");
-var output = document.getElementById("timetoShow");
-output.innerHTML = slider.value; // Display the default slider value
+// // add last user:
+// var postLastUser = function (val) {
+//     var data = { name: localUser, date: val };
+//     $.ajax({
+//         type: 'POST',
+//         url: '/lastuser',
+//         timeout: 2000,
+//         data: JSON.stringify(data),
+//         contentType: 'application/json; charset=utf-8',
+//         success: function (data) {
+//             //show content
+//             console.log('Success!' + data);
+//             //$('#modalName').modal('hide');
+//         },
+//         error: function (jqXHR, textStatus, err) {
+//             //show error message
+//             console.log('text status ' + textStatus + ', err ' + err)
+//         }
+//     });
+// }
 
-// Update the current slider value (each time you drag the slider handle)
-slider.oninput = function () {
-    output.innerHTML = this.value + ' mins';
-}
-
-//get current date:
-var dateTime;
-var getCurrent = function () {
-    var today = new Date();
-    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    dateTime = date + ' ' + time;
-}
 $(document).ready(function () {
-    if (localUser == null) {
+    if (localUser == null || localUser == undefined) {
         $('#modalName').modal('show');
     } else {
         $('#showToast').toast('show');
@@ -132,32 +112,50 @@ $(document).ready(function () {
         tempVal = $('#usr').val();
         if (tempVal != '') {
             postItem(tempVal);
+            localStorage.setItem('username', tempVal);
         } else {
             console.log('mother f* didnt put name');
         }
-        localStorage.setItem('username', tempVal);
     });
     $('#gobtn').on('click', function () {
-        console.log('clicked ok!')
+        console.log('clicked ok GO!')
         let timeselector = $('#timeSelector').val();
         timeselector = timeselector * 60;
-        postTime(timeselector);
-        //postLastUser(dateTime);
+        localUser = localStorage.getItem('username');
+        if (localUser != null && connected == true && localUser != undefined) {
+            //we emit current user and status as false
+            console.log('main validator is working');
+            //socket.emit('currentUserclient', localUser, false);
+            postTime(timeselector, localUser);
+        } else {
+            $('#showAlert').show();
+        }
     });
     $('#cancel').on('click', function () {
         postCancel(false);
     });
-    //show last user only if status if busy:
-
-    // $.get('/showlast', function (data) {
-    //     $('#lastUser').text(data);
-    // });
+    socket.on('connect', function () {
+        console.log('you are connected');
+        connected = true;
+    });
+    socket.on('timer', function (data) {
+        $('#counter').html(data.countdown);
+    });
+    socket.on('status', function (data) {
+        console.log('whats data.status: ' + data.status);
+        if (data.status == false) {
+            $('.toggle').addClass('off');
+            $('#showTime').hide();
+        } 
+        if(data.status == true) {
+            $('.toggle').removeClass('off');
+            $('#showTime').show();
+            $('#cancel').hide();
+        }
+    });
+    //show or hide cancel btn for otherusers
     socket.on('currentUser', function (data) {
         console.log('current user: ' + data.currentuser);
         $('#currentUser').text(data.currentuser);
-        if (data.currentuser == localUser) {
-            $('#cancel').show();
-        }
     });
 });
-//$('.toggle').addClass('off');

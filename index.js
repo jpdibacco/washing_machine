@@ -38,25 +38,6 @@ var countdown;
 function clearCounter(what) {
   clearInterval(what);
 }
-io.sockets.on('connection', function (socket) {
-  // socket.on('reset', function (data) {
-  //   countdown = 10;
-  //   io.sockets.emit('timer', { countdown: countdown });
-
-  // });
-  socket.on('currentUserclient', function (data) {
-    console.log('hey whos the current user?', data);
-    currentUser = data;
-    // check status and emit:
-    if (status == false) {
-      io.sockets.emit('currentUser', { currentuser: currentUser });
-    }
-  });
-  socket.on('disconnect', function () {
-    //do something else when someone is offline?
-  });
-  io.sockets.emit('status', { status: status });
-});
 var settimerFunction;
 //web-push:
 app.post('/subscribe', (req, res) => {
@@ -91,7 +72,10 @@ app.post('/time', function (req, res) {
   console.log('time is: ', req.body);
   countdown = req.body.time;
   status = false;
+  currentUser = req.body.user;
+  console.log('current user?', currentUser);
   io.sockets.emit('status', { status: status });
+  io.sockets.emit('currentUser', { currentuser: currentUser });
   settimerFunction = setInterval(function () {
     if (status === false) {
       countdown--;
@@ -128,4 +112,11 @@ app.post('/lastuser', function (req, res) {
   console.log('Updated user, he has name: ', req.body.name);
   res.send('ok update last user');
 });
-
+//socket io:
+io.sockets.on('connection', function (socket) {
+  io.emit('status', { status: status });
+  io.emit('currentUser', { currentuser: currentUser });
+  socket.on('disconnect', function () {
+    io.emit('user disconnected');
+  });
+});

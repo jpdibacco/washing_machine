@@ -1,36 +1,38 @@
+var checksuscription = localStorage.getItem('suscription');
 const publicVapidKey = 'BJGp8CvGOZIZpm43PY5mSCbpxOUtSPk4h410I5qyb968Z0Q2e6iFKr6shEQ0IOPY-z2HP49DsOOJx4bRhtqHucM';
+if (checksuscription == null) {
+  if ('serviceWorker' in navigator) {
+    console.log('Registering service worker');
 
-if ('serviceWorker' in navigator) {
-  console.log('Registering service worker');
+    run().catch(error => console.error(error));
+  }
 
-  run().catch(error => console.error(error));
-}
+  async function run() {
+    console.log('Registering service worker');
+    const registration = await navigator.serviceWorker.
+      register('/worker.js', { scope: '/' });
+    console.log('Registered service worker');
 
-async function run() {
-  console.log('Registering service worker');
-  const registration = await navigator.serviceWorker.
-    register('/worker.js', {scope: '/'});
-  console.log('Registered service worker');
+    console.log('Registering push');
+    const subscription = await registration.pushManager.
+      subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+      });
+    console.log('Registered push');
 
-  console.log('Registering push');
-  const subscription = await registration.pushManager.
-    subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+    console.log('Sending push');
+    await fetch('/subscribe', {
+      method: 'POST',
+      body: JSON.stringify(subscription),
+      headers: {
+        'content-type': 'application/json'
+      }
     });
-  console.log('Registered push');
-
-  console.log('Sending push');
-  await fetch('/subscribe', {
-    method: 'POST',
-    body: JSON.stringify(subscription),
-    headers: {
-      'content-type': 'application/json'
-    }
-  });
-  console.log('Sent push');
+    console.log('Sent push');
+    localStorage.setItem('suscription', true);
+  }
 }
-
 // Boilerplate borrowed from https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
