@@ -1,6 +1,7 @@
 var socket = io();
 var connected = false;
 var localUser = localStorage.getItem('username'), tempVal;
+var realstatus = false;
 //time selector
 var slider = document.getElementById("timeSelector");
 var output = document.getElementById("timetoShow");
@@ -146,16 +147,21 @@ $(document).ready(function () {
         if (data.status == false) {
             $('.toggle').addClass('off');
             $('#showTime').hide();
+            realstatus = false;
         } 
         if(data.status == true) {
             $('.toggle').removeClass('off');
             $('#showTime').show();
             $('#cancel').hide();
+            realstatus = true;
         }
     });
     //show or hide cancel btn for otherusers
     socket.on('currentUser', function (data) {
         console.log('current user: ' + data.currentuser);
         $('#currentUser').text(data.currentuser);
+        if(localUser == data.currentuser && realstatus == false){
+            $('#cancel').show();
+        }
     });
 });
