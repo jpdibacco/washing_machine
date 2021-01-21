@@ -10,7 +10,7 @@
         "mongoose": "^5.5.0",
         "node-static": "^0.7.11",
         "q": "^1.5.1",
-        "socket.io": "^2.2.0",
+        "socket.io": "^2.4.0",
         "web-push": "^3.3.3"
     },
     "main": "index.js"
